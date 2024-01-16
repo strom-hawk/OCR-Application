@@ -23,7 +23,6 @@ class MainActivity : ComponentActivity() {
     private val STORAGE_REQUEST_CODE = 100
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        checkPermission()
         observeImageList()
     }
 
@@ -47,11 +46,11 @@ class MainActivity : ComponentActivity() {
     }
 
     override fun onResume() {
-        viewModel.getAllImagesPath(this)
+        checkPermission()
         super.onResume()
     }
 
-    fun checkPermission() {
+    private fun checkPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_IMAGES)
                 != PackageManager.PERMISSION_GRANTED
