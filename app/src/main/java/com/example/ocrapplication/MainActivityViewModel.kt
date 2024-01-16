@@ -15,7 +15,6 @@ class MainActivityViewModel(
 
     fun getAllImagesPath(context: Context) {
         viewModelScope.launch {
-            println("______getAllImagesPath called")
             val imageList = mutableListOf<String>()
             val uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
             val projection = arrayOf(MediaStore.MediaColumns.DATA, MediaStore.Images.Media.BUCKET_DISPLAY_NAME)
@@ -28,10 +27,8 @@ class MainActivityViewModel(
                     println("-------imagepath: $imagePath")
                 }
             }
-
-            println("________image path size: ${imageList.size}")
             imageListLiveData.value = listOf()
-            imageListLiveData.value = imageList
+            imageListLiveData.value = imageList.reversed()
         }
     }
 }

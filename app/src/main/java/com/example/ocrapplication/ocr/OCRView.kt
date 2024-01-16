@@ -54,7 +54,6 @@ fun OCRView(
 ) {
     val currentImageIndex = remember { mutableStateOf(value = 0) }
     val currentImageText = remember { mutableStateOf(value = "") }
-    //onImageChange(imageList[currentImageIndex.value])
 
     LaunchedEffect(key1 = extractedText) {
         extractedText.collect {
@@ -70,10 +69,12 @@ fun OCRView(
     ) {
         Spacer(modifier = Modifier.height(16.dp))
         ImageViewComponent(imagePath = imageList[currentImageIndex.value])
+        Spacer(modifier = Modifier.height(16.dp))
         ImageStripComponent(imageList = imageList) { index, bitmap ->
             currentImageIndex.value = index
             onImageChange(bitmap)
         }
+        Spacer(modifier = Modifier.height(16.dp))
         DescriptionField(extractedText = currentImageText.value)
 
     }
@@ -85,7 +86,7 @@ fun ImageViewComponent(imagePath: String) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .fillMaxHeight(0.6F)
+            .fillMaxHeight(0.8F)
             .padding(horizontal = 16.dp)
     ) {
         val imageFile = File(imagePath)
@@ -97,7 +98,7 @@ fun ImageViewComponent(imagePath: String) {
         bitmap?.let { _bitmap ->
             AsyncImage(
                 modifier = Modifier
-                    .size(50.dp),
+                    .fillMaxSize(),
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(imageFile.absolutePath)
                     .build(),

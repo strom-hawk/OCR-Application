@@ -24,7 +24,10 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         checkPermission()
+        observeImageList()
+    }
 
+    private fun observeImageList() {
         viewModel.imageListLiveData.observe(this) {
             it?.let { _imageList ->
                 setContent {
@@ -41,6 +44,11 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    override fun onResume() {
+        viewModel.getAllImagesPath(this)
+        super.onResume()
     }
 
     fun checkPermission() {
