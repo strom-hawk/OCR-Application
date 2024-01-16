@@ -1,7 +1,9 @@
 package com.example.ocrapplication.ocr
 
-import androidx.compose.foundation.Image
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -21,13 +23,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.example.ocrapplication.R
-import com.example.ocrapplication.utils.ColorSystem
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.example.ocrapplication.utils.ColorSystem
 import kotlinx.coroutines.flow.SharedFlow
 import java.io.File
 
@@ -41,8 +41,8 @@ fun OCRViewHolder(
     OCRView(
         imageList = imageList,
         extractedText = extractedText
-    ) { _currentImageId ->
-        viewModel.getTextFromImage(_currentImageId)
+    ) { _bitmap ->
+        viewModel.getTextFromImage(_bitmap)
     }
 }
 
@@ -50,11 +50,11 @@ fun OCRViewHolder(
 fun OCRView(
     imageList: List<String>,
     extractedText: SharedFlow<String>,
-    onImageChange: (Int) -> Unit
+    onImageChange: (Bitmap) -> Unit
 ) {
-    val currentImageId = remember { mutableStateOf(value = R.drawable.image_1) }
+    val currentImageIndex = remember { mutableStateOf(value = 0) }
     val currentImageText = remember { mutableStateOf(value = "") }
-    onImageChange(currentImageId.value)
+    //onImageChange(imageList[currentImageIndex.value])
 
     LaunchedEffect(key1 = extractedText) {
         extractedText.collect {
@@ -69,8 +69,11 @@ fun OCRView(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(modifier = Modifier.height(16.dp))
-        ImageViewComponent(id = currentImageId.value)
-        ImageStripComponent(imageList = imageList)
+        ImageViewComponent(imagePath = imageList[currentImageIndex.value])
+        ImageStripComponent(imageList = imageList) { index, bitmap ->
+            currentImageIndex.value = index
+            onImageChange(bitmap)
+        }
         DescriptionField(extractedText = currentImageText.value)
 
     }
@@ -78,37 +81,58 @@ fun OCRView(
 
 
 @Composable
-fun ImageViewComponent(id: Int) {
+fun ImageViewComponent(imagePath: String) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight(0.6F)
             .padding(horizontal = 16.dp)
     ) {
-        Image(
-            modifier = Modifier
-                .fillMaxWidth(),
-            painter = painterResource(id = id),
-            contentDescription = "Image Preview",
-            contentScale = ContentScale.Fit
-        )
+        val imageFile = File(imagePath)
+        var bitmap: Bitmap? = null
+        if (imageFile.exists()) {
+            bitmap = BitmapFactory.decodeFile(imageFile.absolutePath)
+        }
+
+        bitmap?.let { _bitmap ->
+            AsyncImage(
+                modifier = Modifier
+                    .size(50.dp),
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(imageFile.absolutePath)
+                    .build(),
+                contentDescription = "icon",
+                contentScale = ContentScale.Inside,
+            )
+        }
     }
 }
 
 @Composable
-fun ImageStripComponent(imageList: List<String>) {
+fun ImageStripComponent(
+    imageList: List<String>,
+    onImageClick: (Int, Bitmap) -> Unit
+) {
     LazyRow {
         items(imageList.size) { index ->
             val imageFile = File(imageList[index])
+            var bitmap: Bitmap? = null
+            if (imageFile.exists()) {
+                bitmap = BitmapFactory.decodeFile(imageFile.absolutePath)
+            }
 
-            AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(imageFile.absolutePath)
-                .build(),
-            contentDescription = "icon",
-            contentScale = ContentScale.Inside,
-            modifier = Modifier.size(50.dp)
-            )
+            bitmap?.let { _bitmap ->
+                AsyncImage(
+                    modifier = Modifier
+                        .size(50.dp)
+                        .clickable { onImageClick(index, _bitmap) },
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(imageFile.absolutePath)
+                        .build(),
+                    contentDescription = "icon",
+                    contentScale = ContentScale.Inside,
+                )
+            }
         }
     }
 }

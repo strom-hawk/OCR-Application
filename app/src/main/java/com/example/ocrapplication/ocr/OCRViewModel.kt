@@ -1,14 +1,13 @@
 package com.example.ocrapplication.ocr
 
+import android.graphics.Bitmap
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domainlayer.usecases.TextRecognizerUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -22,12 +21,9 @@ class OCRViewModel @Inject constructor(
     private var _extractedTextFromImage = MutableSharedFlow<String>()
     val extractedTextFromImage: SharedFlow<String> = _extractedTextFromImage
 
-//    private var _extractedTextFromImage = MutableStateFlow("")
-//    val extractedTextFromImage = _extractedTextFromImage.asStateFlow()
-
-    fun getTextFromImage(id: Int) {
+    fun getTextFromImage(bitmap: Bitmap) {
         viewModelScope.launch {
-            _extractedTextFromImage.emitAll(useCase.getTextFromImage(id))
+            _extractedTextFromImage.emitAll(useCase.getTextFromImage(bitmap))
         }
     }
 }

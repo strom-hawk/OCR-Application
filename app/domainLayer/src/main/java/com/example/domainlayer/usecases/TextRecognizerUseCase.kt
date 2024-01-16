@@ -1,8 +1,7 @@
 package com.example.domainlayer.usecases
 
+import android.graphics.Bitmap
 import com.example.domainlayer.repositories.TextRecognizerRepo
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 
@@ -10,7 +9,7 @@ import kotlinx.coroutines.flow.flow
 class TextRecognizerUseCase(
     private val repo: TextRecognizerRepo
 ) {
-    fun getTextFromImage(id: Int) = flow {
-        emitAll(repo.getTextFromImage(id))
+    fun getTextFromImage(bitmap: Bitmap) = flow {
+        emitAll(repo.getTextFromImage(bitmap))
     }
 }
