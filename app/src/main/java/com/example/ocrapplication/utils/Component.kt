@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Share
@@ -26,6 +27,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -34,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.example.datalayer.data.ImageUIModel
 import java.io.File
 
 @Composable
@@ -101,12 +104,12 @@ fun BottomNav(
 
 @Composable
 fun ImageStripComponent(
-    imageList: List<String>,
+    imageList: List<ImageUIModel>,
     onImageClick: (Int, Bitmap) -> Unit
 ) {
     LazyRow {
         items(imageList.size) { index ->
-            val imageFile = File(imageList[index])
+            val imageFile = File(imageList[index].path)
             var bitmap: Bitmap? = null
             if (imageFile.exists()) {
                 bitmap = BitmapFactory.decodeFile(imageFile.absolutePath)
@@ -154,5 +157,29 @@ fun DescriptionField(extractedText: String) {
             color = ColorSystem.grey_900
         )
         Spacer(modifier = Modifier.height(8.dp))
+    }
+}
+
+@Composable
+fun PrimaryButton(
+    title: String,
+    onClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() }
+            .background(
+                color = ColorSystem.black,
+                shape = RoundedCornerShape(12.dp)
+            )
+            .padding(vertical = 8.dp),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = title,
+            color = Color.White
+        )
     }
 }

@@ -6,12 +6,13 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.datalayer.data.ImageUIModel
 import kotlinx.coroutines.launch
 
 class MainActivityViewModel(
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
-    val imageListLiveData = MutableLiveData<List<String>>()
+    val imageListLiveData = MutableLiveData<List<ImageUIModel>>()
 
     fun getAllImagesPath(context: Context) {
         viewModelScope.launch {
@@ -27,8 +28,14 @@ class MainActivityViewModel(
                     println("-------imagepath: $imagePath")
                 }
             }
+
             imageListLiveData.value = listOf()
-            imageListLiveData.value = imageList.reversed()
+            val imageUIModelList = mutableListOf<ImageUIModel>()
+            imageList.forEach { imagePath ->
+                imageUIModelList.add(ImageUIModel(imagePath))
+            }
+
+            imageListLiveData.value = imageUIModelList.reversed()
         }
     }
 }
